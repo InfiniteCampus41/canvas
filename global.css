@@ -62,3 +62,8 @@ button:hover {
     background:white;
     border:1px solid black;
 }
+#appList {
+    color:yellow;
+    font-size:200%;
+    height:50vh
+}
