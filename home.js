@@ -15,8 +15,8 @@ const db = getDatabase(app);
 const table = document.getElementById("memberTable");
 const memberCount = document.getElementById("memberCount");
 onValue(ref(db, "members"), (snapshot) => {
-    while (table.rows.length > 7) table.deleteRow(3);
-    let count = 6;
+    while (table.rows.length > 6) table.deleteRow(3);
+    let count = 5;
     const data = snapshot.val();
     if (data) {
         Object.values(data).forEach(member => {
