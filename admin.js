@@ -105,7 +105,8 @@ onValue(ref(db, "chat"), (snapshot) => {
             }
             div.style.border = "2px solid #ccc";
             div.style.background = "black";
-            div.style.borderRadius = "20px";
+            div.style.padding = "9px";
+            div.style.borderRadius = "10px";
             div.style.margin = "10px 0";
             chatBox.appendChild(div);
         });
