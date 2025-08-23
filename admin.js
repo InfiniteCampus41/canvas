@@ -32,13 +32,13 @@ onValue(ref(db, "applications"), (snapshot) => {
         approveBtn.onclick = async () => {
             await push(ref(db, "members"), { name: data.name, email: data.email });
             await remove(ref(db, "applications/" + id));
-            window.location.href = `mailto:${data.email}?subject=Southeast Polk Video Game Club Application&body=Hi ${data.name}, your application has been approved! 🎉`;
+            window.location.href = `mailto:${data.email}?subject=Southeast Polk Coding Club Application&body=Hi ${data.name}, your application has been approved! 🎉`;
         };
         const denyBtn = document.createElement("button");
         denyBtn.textContent = "Deny";
         denyBtn.onclick = async () => {
             await remove(ref(db, "applications/" + id));
-            window.location.href = `mailto:${data.email}?subject=Southeast Polk Video Game Club Application&body=Hi ${data.name}, unfortunately your application has been denied. Thank you for applying.`;
+            window.location.href = `mailto:${data.email}?subject=Southeast Polk Coding Club Application&body=Hi ${data.name}, unfortunately your application has been denied. Thank you for applying.`;
         };
         div.appendChild(approveBtn);
         div.appendChild(denyBtn);
