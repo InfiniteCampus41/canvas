@@ -1,6 +1,5 @@
 <html>
     <head>
-        <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-7SV03ZXJ9R">
         </script>
         <script>
@@ -15,71 +14,39 @@
         <link rel="icon" type="image/png" href="https://www.southeastpolk.org/wp-content/uploads/2025/01/social-logo.png">
         <link rel="stylesheet" href="global.css">
     </head>
-<body>
-  <h1>Application Form</h1>
-  <form id="applyForm">
-    <label>Full Name: <input type="text" id="fullName" required></label><br><br>
-    <label>Reason: <textarea id="reason" required></textarea></label><br><br>
-    <label>Email: <input type="email" id="email" required></label><br><br>
-    <button type="submit">Submit</button>
-  </form>
-  <p id="message"></p>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { 
-    getDatabase, ref, push, get, query, orderByChild, equalTo 
-  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDMj318tH4QzLvK-HSh8v8qobVnxM0Lmns",
-    authDomain: "discord-bot-5d5b1.firebaseapp.com",
-    databaseURL: "https://discord-bot-5d5b1-default-rtdb.firebaseio.com", 
-    projectId: "discord-bot-5d5b1",
-    storageBucket: "discord-bot-5d5b1.firebasestorage.app",
-    messagingSenderId: "300539295561",
-    appId: "1:300539295561:web:d0fd8d48f48fcc94764c98",
-    measurementId: "G-RTS81NC93R"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  const form = document.getElementById("applyForm");
-  const msg = document.getElementById("message");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("fullName").value.trim();
-    const reason = document.getElementById("reason").value.trim();
-    const email = document.getElementById("email").value.trim();
-
-    try {
-      // Check if email already applied
-      const emailQuery = query(ref(db, "applications"), orderByChild("email"), equalTo(email));
-      const snapshot = await get(emailQuery);
-
-      if (snapshot.exists()) {
-        msg.textContent = "This email has already applied.";
-        return;
-      }
-
-      // Add new application
-      await push(ref(db, "applications"), {
-        name,
-        reason,
-        email,
-        timestamp: Date.now()
-      });
-
-      msg.textContent = "✅ Thank you for applying!";
-      form.style.display = "none";
-
-    } catch (err) {
-      console.error("Error submitting application:", err);
-      msg.textContent = "⚠️ Error submitting application. Check console.";
-    }
-  });
-</script>
-</body>
+    <body>
+        <center>
+            <h1 class="tptxt">
+                Application Form
+            </h1>
+            <form id="applyForm">
+                <label class="txt">
+                    Full Name: 
+                    <input class="txt" type="text" id="fullName" required>
+                </label>
+                <br>
+                <br>
+                <label class="txt">
+                    Reason: 
+                    <textarea class="button" id="reason" required>
+                    </textarea>
+                </label>
+                <br>
+                <br>
+                <label class="txt">
+                    Email: 
+                    <input class="button" type="email" id="email" required>
+                </label>
+                <br>
+                <br>
+                <button type="submit">
+                    Submit
+                </button>
+            </form>
+            <p class="txt" id="message">
+            </p>
+        </center>
+        <script type="module" src="apply.js">
+        </script>
+    </body>
 </html>

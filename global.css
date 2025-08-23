@@ -1,0 +1,64 @@
+@import"https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css";@import"https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,400italic,500italic";span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark {
+    margin: 0;
+    padding: 3px;
+    border: 0;
+    outline: 0;
+    font-size: 110%;
+    vertical-align: baseline;
+    background: rgba(0,0,0,0)
+}
+body::-webkit-scrollbar {
+    display: none;
+}
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url('https://codehs.com/uploads/a90053d331bc9de909d3eeec0c367692');
+}
+.tptxt {
+    color:yellow;
+    font-weight:bold;
+}
+.txt {
+    color:white;
+}
+.button {
+    text-decoration:none;
+    color:white;
+    padding:9px;
+    background:black;
+    border-radius:5px;
+    border:1px solid white;
+    font-size:70%;
+}
+.button:hover {
+    color:black;
+    background:white;
+    border:1px solid black;
+}
+#memberCount {
+    color:aqua;
+}
+table {
+    color:white;
+    background:black;
+    border:1px solid white;
+}
+th {
+    font-weight:bold;
+    color:white;
+}
+button {
+    text-decoration:none;
+    color:white;
+    padding:9px;
+    background:black;
+    border-radius:5px;
+    border:1px solid white;
+    font-size:70%;
+}
+button:hover {
+    color:black;
+    background:white;
+    border:1px solid black;
+}
