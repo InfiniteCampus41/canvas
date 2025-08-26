@@ -25,6 +25,7 @@ onChildAdded(appsRef, (snapshot) => {
     div.innerHTML = `
         <p><b>Name:</b><br> ${appData.name}</p>
         <p><b>Email:</b><br> ${appData.email}</p>
+        <iframe src="${appData.gameUrl}" style="height:100px; width:100px;">Loading...</iframe>
         <p><a class="button" href="${appData.gameUrl}" target="_blank">${appData.gameName}</a></p>
         <button class="button" >Approve</button>
         <button class="button" >Deny</button>
