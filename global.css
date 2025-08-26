@@ -26,13 +26,13 @@ body {
     padding-bottom:10px;
     text-align:center;
     height:auto;
-   filter:
-    invert(100%)
-    sepia(100%)
-    saturate(1000%)
-    hue-rotate(2deg)
-    brightness(95%)
-    contrast(105%);
+    filter:
+        invert(100%)
+        sepia(100%)
+        saturate(1000%)
+        hue-rotate(2deg)
+        brightness(95%)
+        contrast(105%);
 }
 .button {
     text-decoration:none;
@@ -43,6 +43,7 @@ body {
     border-radius:5px;
     color:white;
     font-size:70%;
+    transition:all 0.3s;
 }
 .button:hover {
     background:white;
