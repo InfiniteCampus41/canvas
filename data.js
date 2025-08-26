@@ -11,7 +11,7 @@ function normalizeUrl(url) {
 async function checkURLStatus(url) {
     const statusEl = document.getElementById('status');
     statusEl.textContent = "Verifying...";
-    statusEl.style.color = "white";
+    statusEl.style.color = "black";
     url = normalizeUrl(url);
     try {
         const response = await fetch(url, { method: 'HEAD' });
@@ -88,7 +88,7 @@ async function generateDataUrl() {
     const check = await checkURLStatus(urlInput);
     if (check.status === "cors-ok" || check.status === "cors-ok-but-error" || check.status === "cors-blocked") {
         statusEl.textContent = "Generating...";
-        statusEl.style.color = "white";
+        statusEl.style.color = "black";
         let result = '';
         if (type === 'image') {
             result = generateBase64(urlInput);
@@ -98,7 +98,7 @@ async function generateDataUrl() {
         if (check.status === "cors-blocked") {
             document.getElementById('output').value = result;
             statusEl.textContent = "Website Does Not Allow CORS So Link May Not Work";
-            statusEl.style.color = "yellow"
+            statusEl.style.color = "orange"
         } else {
             document.getElementById('output').value = result;
             statusEl.textContent = "Success";
@@ -106,7 +106,7 @@ async function generateDataUrl() {
         }
     }
     else if (check.status === "not-exist") {
-        statusEl.textContent = "ERR#15 Website Does Not Exist";
+        statusEl.textContent = "Website Does Not Exist";
         document.getElementById('output').value = '';
         statusEl.style.color = "red"
     }
@@ -137,5 +137,5 @@ document.getElementById('copyBtn').addEventListener('click', () => {
     }
     navigator.clipboard.writeText(output)
     .then(() => alert("Copied To Clipboard!"))
-    .catch(() => alert("ERR#14 Failed To Copy."));
+    .catch(() => alert("Failed To Copy."));
 });
