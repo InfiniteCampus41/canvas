@@ -22,11 +22,11 @@ onChildAdded(appsRef, (snapshot) => {
     div.style.margin = "10px";
     div.style.padding = "10px";
     div.innerHTML = `
-        <p><b>Name:</b> ${appData.name}</p>
-        <p><b>Email:</b> ${appData.email}</p>
-        <p><a href="${appData.gameUrl}" target="_blank">${appData.gameName}</a></p>
-        <button>Approve</button>
-        <button>Deny</button>
+        <p><b>Name:</b><br> ${appData.name}</p>
+        <p><b>Email:</b><br> ${appData.email}</p>
+        <p><a class="button" href="${appData.gameUrl}" target="_blank">${appData.gameName}</a></p>
+        <button class="button" >Approve</button>
+        <button class="button" >Deny</button>
     `;
     const [approveBtn, denyBtn] = div.querySelectorAll("button");
     approveBtn.onclick = async () => {
