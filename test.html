@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Website Metadata Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px 0;
+      width: 100%;
+      max-width: 400px;
+    }
+    .card {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      max-width: 600px;
+    }
+    img {
+      max-width: 100px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      margin: 10px 0 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Website Metadata Viewer</h1>
+  <input type="text" id="urlInput" placeholder="Enter website URL (e.g., https://example.com)">
+  <button onclick="getMetadata()">Fetch Metadata</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function getMetadata() {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url) {
+        alert("Please enter a URL");
+        return;
+      }
+
+      const apiURL = `https://jsonlink.io/api/extract?url=${encodeURIComponent(url)}`;
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = "<p>Loading...</p>";
+
+      try {
+        const response = await fetch(apiURL);
+        if (!response.ok) throw new Error("Failed to fetch metadata");
+        const data = await response.json();
+
+        resultDiv.innerHTML = `
+          <div class="card">
+            ${data.images && data.images[0] ? `<img src="${data.images[0]}" alt="Preview">` : ""}
+            <h2>${data.title || "No title found"}</h2>
+            <p><strong>Description:</strong> ${data.description || "No description found"}</p>
+            <p><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></p>
+            ${data.favicons && data.favicons[0] ? `<p><strong>Favicon:</strong><br><img src="${data.favicons[0]}" alt="Favicon"></p>` : ""}
+          </div>
+        `;
+      } catch (err) {
+        resultDiv.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
