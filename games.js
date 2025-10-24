@@ -49,6 +49,9 @@ onValue(approvedRef, (snapshot) => {
                 backButton.onclick = () => {
                     iframe.remove();
                     backButton.remove();
+                    topBar.forEach(el => {
+                        el.style.display = 'block';
+                    });
                     container.style.display = "flex";
                 };
             };
