@@ -38,7 +38,7 @@ onValue(approvedRef, (snapshot) => {
                 iframe.setAttribute("type", "text/html");
                 iframe.setAttribute("data", game.gameUrl);
                 iframe.style.width = "calc( 100vw - 60px)";
-                iframe.style.height = "90%";
+                iframe.style.height = "100%";
                 iframe.style.marginLeft = "60px";
                 const topBar = document.querySelectorAll('.topBar');
                 topBar.forEach(el => {
