@@ -37,9 +37,13 @@ onValue(approvedRef, (snapshot) => {
                 const iframe = document.createElement("object");
                 iframe.setAttribute("type", "text/html");
                 iframe.setAttribute("data", game.gameUrl);
-                iframe.style.width = "90%";
+                iframe.style.width = "calc( 100vw - 60px)";
                 iframe.style.height = "90%";
-                iframe.style.marginLeft = "70px";
+                iframe.style.marginLeft = "60px";
+                const topBar = document.querySelectorAll('.topBar');
+                topBar.forEach(el => {
+                  el.style.display = 'none';
+                });
                 document.body.appendChild(backButton);
                 document.body.appendChild(iframe);
                 backButton.onclick = () => {
