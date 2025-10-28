@@ -292,17 +292,17 @@ async function renderMessageInstant(id, msg) {
     profilePic.style.objectFit = "cover";
     profilePic.style.cursor = "pointer";
     const profilePics = [
-        "canvas/pfps/1.jpeg",
-        "canvas/pfps/2.jpeg",
-        "canvas/pfps/3.jpeg",
-        "canvas/pfps/4.jpeg",
-        "canvas/pfps/5.jpeg",
-        "canvas/pfps/6.jpeg",
-        "canvas/pfps/7.jpeg",
-        "canvas/pfps/8.jpeg",
-        "canvas/pfps/9.jpeg",
-        "canvas/pfps/f3.jpeg",
-        "canvas/pfps/kaiden.png"
+        "/pfps/1.jpeg",
+        "/pfps/2.jpeg",
+        "/pfps/3.jpeg",
+        "/pfps/4.jpeg",
+        "/pfps/5.jpeg",
+        "/pfps/6.jpeg",
+        "/pfps/7.jpeg",
+        "/pfps/8.jpeg",
+        "/pfps/9.jpeg",
+        "/pfps/f3.jpeg",
+        "/pfps/kaiden.png"
     ];
     leftWrapper.appendChild(profilePic);
     leftWrapper.appendChild(nameSpan);
