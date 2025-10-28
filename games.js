@@ -37,14 +37,21 @@ onValue(approvedRef, (snapshot) => {
                 const iframe = document.createElement("object");
                 iframe.setAttribute("type", "text/html");
                 iframe.setAttribute("data", game.gameUrl);
-                iframe.style.width = "90%";
-                iframe.style.height = "90%";
-                iframe.style.marginLeft = "70px";
+                iframe.style.width = "calc( 100vw - 60px)";
+                iframe.style.height = "100%";
+                iframe.style.marginLeft = "60px";
+                const topBar = document.querySelectorAll('.topBar');
+                topBar.forEach(el => {
+                  el.style.display = 'none';
+                });
                 document.body.appendChild(backButton);
                 document.body.appendChild(iframe);
                 backButton.onclick = () => {
                     iframe.remove();
                     backButton.remove();
+                    topBar.forEach(el => {
+                        el.style.display = 'block';
+                    });
                     container.style.display = "flex";
                 };
             };
