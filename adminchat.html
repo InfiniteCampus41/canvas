@@ -1,0 +1,156 @@
+<html>
+    <head>
+        <title>
+            Admin Panel
+        </title>
+        <link rel="icon" type="image/png" href="favicon.ico">
+        <link rel="stylesheet" href="global.css">
+        <style>
+            #left, #right {
+                padding: 20px;
+                overflow-y: auto;
+            }
+            #left {
+                flex: 2;
+                border-right: 1px solid #333;
+            }
+            #right {
+                flex: 1;
+            }
+            .user-item {
+                cursor: pointer;
+                margin: 5px 0;
+                padding: 5px;
+                border-radius: 5px;
+                background: #1e1e1e;
+            }
+            .user-item:hover {
+                background: #333;
+            }
+            .message {
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 12px;
+                background: #1e1e1e;
+                padding: 10px;
+                border-radius: 8px;
+            }
+            .message img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+                object-fit: cover;
+            }
+            .msg-content {
+                flex: 1;
+            }
+            .msg-header {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.85em;
+                color: #aaa;
+            }
+            .msg-text {
+                margin-top: 4px;
+                color: white;
+                word-break: break-word;
+            }
+            .msg-edited {
+                font-size: 0.75em;
+                color: #999;
+                margin-top: 4px;
+            }
+            textarea {
+                width: 100%;
+                height: 300px;
+                background: #1e1e1e;
+                color: white;
+                border: 1px solid #444;
+                border-radius: 6px;
+                padding: 10px;
+            }
+            #adminControls {
+                margin-top: 12px;
+                display: flex;
+                gap: 8px;
+                align-items: flex-start;
+            }
+            #adminControls select, #adminControls textarea {
+                border-radius: 6px;
+                border: 1px solid #444;
+                background: #1e1e1e;
+                color: white;
+                padding: 8px;
+            }
+            #adminControls textarea {
+                flex: 1;
+                height: 60px;
+                resize: vertical;
+            }
+            .small-btn {
+                padding: 6px 10px;
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="left">
+            <h2>
+                Messages Mod View
+            </h2>
+            <div id="privateChats">
+            </div>
+            <div id="chatView" style="display:none;">
+                <h3 id="chatTitle">
+                </h3>
+                <div id="chatMessages">
+                </div>
+                <div id="adminControls">
+                    <label for="sendAsSelect" style="color:#aaa;">
+                        Send as:
+                    </label>
+                    <select id="sendAsSelect">
+                        <option value="jiEcu7wSifMalQxVupmQXRchA9k1">
+                            Hacker41
+                        </option>
+                    </select>
+                    <textarea id="adminMessageInput" placeholder="Type A Message To Send"></textarea>
+                    <div style="display:flex;flex-direction:column;">
+                        <button id="sendAdminMessage" class="small-btn">
+                            Send
+                        </button>
+                        <button id="deleteChat" class="small-btn" style="margin-top:8px;background:#7a1f1f;">
+                            Delete Chat
+                        </button>
+                    </div>
+                </div>
+                <div style="margin-top:8px;">
+                    <button id="backButton">
+                        Back
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="right">
+            <h2>
+                Users
+            </h2>
+            <div id="userList">
+            </div>
+            <div id="userEdit" style="display:none;">
+                <h3 id="editTitle">
+                </h3>
+                <textarea id="userData"></textarea>
+                <button id="saveUser">
+                    Save Changes
+                </button>
+                <button id="backToList">
+                    Back
+                </button>
+            </div>
+        </div>
+        <script type="module" src="admin.js">
+        </script>
+    </body>
+</html>
