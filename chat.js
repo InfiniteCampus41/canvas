@@ -152,7 +152,7 @@ async function isUserMuted(uid) {
     if (!snap.exists()) return false;
     const data = snap.val();
     if (data.expires && Date.now() > data.expires) {
-        await remove(muteRef); 
+        await remove(muteRef);
         return false;
     }
     return true;
@@ -1045,7 +1045,7 @@ function setHeader(user, name) {
     } else if(["nitrix118@gmail.com"].includes(user.email)) {
         roleSpan.textContent = "Co-Owner"; roleSpan.className = "role-cOwner";
         roleSpan.style.color = "lightblue";
-    } else if (["jonloomis2000@gmail.com", "cegmnops@icloud.com", "larrytrejo200@gmail.com", "2030kallison@johnstonschools.org"].includes(user.email)) {
+    } else if (["jonloomis2000@gmail.com", "cegmnops@icloud.com", "larrytrejo200@gmail.com", "2030kallison@johnstonschools.org", "carpenterlevi961@gmail.com"].includes(user.email)) {
         roleSpan.textContent = "Admin"; roleSpan.className = "role-admin";
         roleSpan.style.color = "blue";
     } else if(user.email === "newsomr95@gmail.com") {
@@ -1057,17 +1057,17 @@ function setHeader(user, name) {
     }
 }
 onAuthStateChanged(auth, async user => {
-    if (!user) { 
-        showError("Not Logged In!"); 
+    if (!user) {
+        showError("Not Logged In!");
         setTimeout(() => location.href = "login.html", 1000);
-        return; 
+        return;
     }
     currentUser = user;
     const ownerSnap = await get(ref(db, `users/${user.uid}/profile/isOwner`));
     isOwner = ownerSnap.exists() && ownerSnap.val() === true;
     if (user.email === "infinitecodehs@gmail.com") isOwner = true;
     isAdmin = ["infinitecodehs@gmail.com", "nitrix118@gmail.com", "jonloomis2000@gmail.com",
-               "newsomr95@gmail.com", "cegmnops@icloud.com", "larrytrejo200@gmail.com", "2030kallison@johnstonschools.org"]
+               "newsomr95@gmail.com", "cegmnops@icloud.com", "larrytrejo200@gmail.com", "2030kallison@johnstonschools.org", "carpenterlevi961@gmail.com"]
                .includes(user.email);
     adminControls.style.display = (isAdmin || isOwner) ? "block" : "none";
     if (isAdmin && !isOwner) {
