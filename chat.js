@@ -6,9 +6,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-database.js";
 const channelList = document.getElementById("channels");
 const chatLog = document.getElementById("chatLog");
+let lastMessageTimestamp = 0;
+const MESSAGE_COOLDOWN = 3000;
 const mentionNotif = document.getElementById("mentionNotif");
-const mentionToggle = document.getElementById("mentionToggle");
 const mentionToggleLabel = document.getElementById("mentionToggleLabel");
+const mentionToggle = document.getElementById("mentionToggle");
 const chatInput = document.getElementById("chatInput");
 const sendBtn = document.getElementById("sendBtn");
 const adminControls = document.getElementById("adminControls");
@@ -56,6 +58,7 @@ style.textContent = `
 .msg { margin: 6px 0; }
 .left { display:flex; align-items:center; gap:6px; }
 `;
+
 const typingIndicator = document.createElement("div");
 typingIndicator.id = "typingIndicator";
 typingIndicator.style.fontSize = "0.8em";
@@ -73,7 +76,7 @@ function showError(message) {
     errorDiv.textContent = message;
     Object.assign(errorDiv.style, {
         position: "fixed",
-        top: header ? `${header.offsetHeight + 10}px` : "10px",
+        top: "10px",
         left: "50%",
         transform: "translateX(-50%)",
         backgroundColor: "salmon",
@@ -110,32 +113,6 @@ function scrollToBottom(smooth = false) {
         }, 50);
     });
 }
-const clock = document.createElement("div");
-clock.id = "clock";
-clock.style.textAlign = "center";
-clock.style.marginTop = "-1%";
-const roleEl = document.getElementById("role");
-const header = document.getElementById("header");
-if (header && roleEl) {
-    header.style.position = "relative";
-    const roleRect = roleEl.getBoundingClientRect();
-    const headerRect = header.getBoundingClientRect();
-    const offsetTop = roleEl.offsetTop + roleEl.offsetHeight + 5;
-    header.appendChild(clock);
-}
-function updateClock() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
-    const seconds = now.getSeconds();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const displayHour = hours % 12 || 12;
-    const displayMinute = minutes.toString().padStart(2, '0');
-    const displaySecond = seconds.toString().padStart(2, '0');
-    clock.textContent = `${displayHour}:${displayMinute}:${displaySecond} ${ampm}`;
-}
-updateClock();
-setInterval(updateClock, 100);
 async function muteUser(uid) {
     const muteRef = ref(db, `mutedUsers/${uid}`);
     const expireTime = Date.now() + 24 * 60 * 60 * 1000;
@@ -152,7 +129,7 @@ async function isUserMuted(uid) {
     if (!snap.exists()) return false;
     const data = snap.val();
     if (data.expires && Date.now() > data.expires) {
-        await remove(muteRef);
+        await remove(muteRef); 
         return false;
     }
     return true;
@@ -481,31 +458,98 @@ async function renderMessageInstant(id, msg) {
             nameSpan.textContent = displayName;
             nameSpan.style.color = color;
             if (isOwner && !senderIsOwner) {
-                nameSpan.addEventListener("contextmenu", async (e) => {
-                    e.preventDefault();
-                    const alreadyMuted = await isUserMuted(msg.sender);
-                    const menu = document.createElement("div");
-                    menu.style.position = "absolute";
-                    menu.style.left = e.pageX + "px";
-                    menu.style.top = e.pageY + "px";
-                    menu.style.background = "#222";
-                    menu.style.border = "1px solid #555";
-                    menu.style.borderRadius = "6px";
-                    menu.style.padding = "6px 10px";
-                    menu.style.color = "#fff";
-                    menu.style.cursor = "pointer";
-                    menu.style.zIndex = 9999;
-                    menu.textContent = alreadyMuted ? "Unmute User" : "Mute For 1 Day";
-                    document.body.appendChild(menu);
-                    const closeMenu = () => { menu.remove(); document.removeEventListener("click", closeMenu); };
-                    document.addEventListener("click", closeMenu);
-                    menu.addEventListener("click", async () => {
-                        if (alreadyMuted) await unmuteUser(msg.sender);
-                        else await muteUser(msg.sender);
-                        closeMenu();
-                    });
-                });
+    nameSpan.addEventListener("contextmenu", async (e) => {
+    e.preventDefault();
+    const alreadyMuted = await isUserMuted(msg.sender);
+    const menu = document.createElement("div");
+    menu.style.position = "absolute";
+    menu.style.left = e.pageX + "px";
+    menu.style.top = e.pageY + "px";
+    menu.style.background = "#222";
+    menu.style.border = "1px solid #555";
+    menu.style.borderRadius = "6px";
+    menu.style.padding = "6px 10px";
+    menu.style.color = "#fff";
+    menu.style.cursor = "pointer";
+    menu.style.zIndex = 9999;
+
+    if (alreadyMuted) {
+        menu.textContent = "Unmute User";
+        menu.onclick = async () => {
+            await unmuteUser(msg.sender);
+            closeMenu();
+        };
+    } else {
+        menu.textContent = "Mute User";
+        const options = document.createElement("div");
+        options.style.display = "flex";
+        options.style.flexDirection = "column";
+        options.style.marginTop = "4px";
+
+        const muteMinutes = document.createElement("div");
+        muteMinutes.textContent = "Minutes";
+        muteMinutes.style.cursor = "pointer";
+        muteMinutes.onclick = async () => {
+            let minutes = prompt("Mute for how many minutes?", "10");
+            minutes = parseInt(minutes);
+            if (!isNaN(minutes) && minutes > 0) {
+                const muteRef = ref(db, `mutedUsers/${msg.sender}`);
+                const expireTime = Date.now() + minutes * 60 * 1000;
+                await set(muteRef, { expires: expireTime });
+                showSuccess(`User muted for ${minutes} minute(s).`);
+            } else {
+                showError("Invalid duration entered.");
             }
+            closeMenu();
+        };
+
+        const muteHours = document.createElement("div");
+        muteHours.textContent = "Hours";
+        muteHours.style.cursor = "pointer";
+        muteHours.onclick = async () => {
+            let hours = prompt("Mute for how many hours?", "1");
+            hours = parseInt(hours);
+            if (!isNaN(hours) && hours > 0) {
+                const muteRef = ref(db, `mutedUsers/${msg.sender}`);
+                const expireTime = Date.now() + hours * 60 * 60 * 1000;
+                await set(muteRef, { expires: expireTime });
+                showSuccess(`User muted for ${hours} hour(s).`);
+            } else {
+                showError("Invalid duration entered.");
+            }
+            closeMenu();
+        };
+
+        const muteDays = document.createElement("div");
+        muteDays.textContent = "Days";
+        muteDays.style.cursor = "pointer";
+        muteDays.onclick = async () => {
+            let days = prompt("Mute for how many days?", "1");
+            days = parseInt(days);
+            if (!isNaN(days) && days > 0) {
+                const muteRef = ref(db, `mutedUsers/${msg.sender}`);
+                const expireTime = Date.now() + days * 24 * 60 * 60 * 1000;
+                await set(muteRef, { expires: expireTime });
+                showSuccess(`User muted for ${days} day(s).`);
+            } else {
+                showError("Invalid duration entered.");
+            }
+            closeMenu();
+        };
+
+        options.appendChild(muteMinutes);
+        options.appendChild(muteHours);
+        options.appendChild(muteDays);
+        menu.appendChild(options);
+    }
+
+    document.body.appendChild(menu);
+    const closeMenu = () => { menu.remove(); document.removeEventListener("click", closeMenu); };
+    document.addEventListener("click", closeMenu);
+});
+
+}
+
             if (badgeText) {
                 const badgeSpan = document.createElement("span");
                 badgeSpan.textContent = `| ${badgeText} |`;
@@ -621,6 +665,22 @@ async function renderMessageInstant(id, msg) {
     }
     return div;
 }
+async function cleanExpiredMutes() {
+    const mutedRef = ref(db, 'mutedUsers');
+    const snap = await get(mutedRef);
+    if (!snap.exists()) return;
+    const allMutes = snap.val();
+    for (const uid in allMutes) {
+        const data = allMutes[uid];
+        if (data.expires && Date.now() > data.expires) {
+            await remove(ref(db, `mutedUsers/${uid}`));
+            console.log(`Expired mute for ${uid} removed`);
+        }
+    }
+}
+cleanExpiredMutes();
+setInterval(cleanExpiredMutes, 1000);
+
 async function attachMessageListeners(msgRef) {
     detachCurrentMessageListeners();
     currentMsgRef = msgRef;
@@ -917,6 +977,15 @@ sendBtn.onclick = async () => {
     if (muted) {
         return;
     }
+    if (!isAdmin && !isOwner) {
+    const now = Date.now();
+    if (now - lastMessageTimestamp < MESSAGE_COOLDOWN) {
+        showError("You can only send a message every 3 seconds.");
+        return;
+    }
+    lastMessageTimestamp = now;
+}
+
     const mentions = trimmed.match(/@\w+/g);
     if (mentions && mentions.length > 1) {
         showError("Only One Mention Per Message Is Allowed.");
@@ -1035,48 +1104,27 @@ chatInput.addEventListener("input", () => {
 chatInput.addEventListener("blur", () => {
     mentionHint.style.display = "none";
 });
-function setHeader(user, name) {
-    usernameSpan.textContent = name;
-    usernameSpan.style.color = currentColor;
-    emailSpan.textContent = user.email;
-    if (isOwner || user.email === "infinitecodehs@gmail.com") {
-        roleSpan.textContent = "Owner"; roleSpan.className = "role-owner";
-        roleSpan.style.color = "lime";
-    } else if(["nitrix118@gmail.com"].includes(user.email)) {
-        roleSpan.textContent = "Co-Owner"; roleSpan.className = "role-cOwner";
-        roleSpan.style.color = "lightblue";
-    } else if (["jonloomis2000@gmail.com", "cegmnops@icloud.com", "larrytrejo200@gmail.com", "2030kallison@johnstonschools.org", "carpenterlevi961@gmail.com"].includes(user.email)) {
-        roleSpan.textContent = "Admin"; roleSpan.className = "role-admin";
-        roleSpan.style.color = "blue";
-    } else if(user.email === "newsomr95@gmail.com") {
-        roleSpan.textContent = "Tester"; roleSpan.className = "role-test";
-        roleSpan.style.color = "darkgoldenrod";
-    } else {
-        roleSpan.textContent = "User"; roleSpan.className = "role-user";
-        roleSpan.style.color = "white";
-    }
-}
 onAuthStateChanged(auth, async user => {
-    if (!user) {
-        showError("Not Logged In!");
+    if (!user) { 
+        showError("Not Logged In!"); 
         setTimeout(() => location.href = "login.html", 1000);
-        return;
+        return; 
     }
+        const adminSnap = await get(ref(db, `users/${user.uid}/profile/isAdmin`));
+
     currentUser = user;
     const ownerSnap = await get(ref(db, `users/${user.uid}/profile/isOwner`));
     isOwner = ownerSnap.exists() && ownerSnap.val() === true;
     if (user.email === "infinitecodehs@gmail.com") isOwner = true;
-    isAdmin = ["infinitecodehs@gmail.com", "nitrix118@gmail.com", "jonloomis2000@gmail.com",
-               "newsomr95@gmail.com", "cegmnops@icloud.com", "larrytrejo200@gmail.com", "2030kallison@johnstonschools.org", "carpenterlevi961@gmail.com"]
-               .includes(user.email);
+isAdmin = adminSnap.exists() ? adminSnap.val() : false;
+isOwner = ownerSnap.exists() ? ownerSnap.val() : false;
+
     adminControls.style.display = (isAdmin || isOwner) ? "block" : "none";
-    if (isAdmin && !isOwner) {
-        newChannelName.style.display = "none";
-        addChannelBtn.style.display = "none";
-    }
+newChannelName.style.display = (isAdmin || isOwner) ? "inline-block" : "none";
+addChannelBtn.style.display = (isAdmin || isOwner) ? "inline-block" : "none";
+
     await ensureDisplayName(user);
     await loadMentionSetting(user);
-    setHeader(user, currentName);
     startChannelListeners();
     await renderChannelsFromDB();
     if (currentPath && currentPath.includes("messages/Admin-Chat") && !(isAdmin || isOwner)) {
@@ -1092,6 +1140,39 @@ onAuthStateChanged(auth, async user => {
             openPrivateChat(storedUid, name);
         });
         localStorage.removeItem("openPrivateChatUid");
+    }
+    const nameSnap = await get(ref(db, `users/${user.uid}/profile/displayName`));
+    const displayName = nameSnap.exists() ? nameSnap.val() : user.email;
+    const nameColor = await get(ref(db, `users/${user.uid}/settings/color`));
+    const DNC = nameColor.exists() ? nameColor.val() : `#ffffff`;
+    // Load Role Information
+
+    isAdmin = adminSnap.exists() ? adminSnap.val() : false;
+    isOwner = ownerSnap.exists() ? ownerSnap.val() : false;
+
+    // Display role
+    roleSpan.textContent = isOwner ? "Owner" : (isAdmin ? "Admin" : "User");
+    roleSpan.style.color = isOwner ? "lime" : (isAdmin ? "lightblue" : "white");
+
+    // Display Username
+    usernameSpan.textContent = displayName;
+    usernameSpan.style.color = DNC;
+
+    // Load PFP index (0–10)
+    const pfpSnap = await get(ref(db, `users/${user.uid}/profile/pic`));
+    const pfpIndex = pfpSnap.exists() ? pfpSnap.val() : 0;
+
+    // Available pfps
+    const profilePics = [
+        "/pfps/1.jpeg","/pfps/2.jpeg","/pfps/3.jpeg","/pfps/4.jpeg",
+        "/pfps/5.jpeg","/pfps/6.jpeg","/pfps/7.jpeg","/pfps/8.jpeg",
+        "/pfps/9.jpeg","/pfps/f3.jpeg","/pfps/kaiden.png"
+    ];
+
+    // Sidebar PFP element
+    const sidebarPfp = document.getElementById("sidebarPfp");
+    if (sidebarPfp) {
+        sidebarPfp.src = profilePics[pfpIndex];
     }
 });
 addChannelBtn.onclick = async () => {
@@ -1118,7 +1199,7 @@ function showSuccess(message) {
     successDiv.textContent = message;
     Object.assign(successDiv.style, {
         position: "fixed",
-        top: header ? `${header.offsetHeight + 10}px` : "10px",
+        top: "10px",
         left: "50%",
         transform: "translateX(-50%)",
         backgroundColor: "seagreen",

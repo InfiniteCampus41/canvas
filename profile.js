@@ -27,7 +27,7 @@ async function loadUserProfile(username) {
     let foundUser = null;
     usersSnap.forEach((child) => {
       const data = child.val();
-      const displayName = data?.settings?.displayName;
+      const displayName = data?.profile?.displayName;
       if (displayName && displayName.toLowerCase() === username.toLowerCase()) {
         foundUser = { uid: child.key, ...data };
       }
@@ -38,7 +38,7 @@ async function loadUserProfile(username) {
     }
     const color = foundUser.settings?.color || "#ffffff";
     const bio = foundUser.profile?.bio || "No Bio Set.";
-    const displayName = foundUser.settings?.displayName || "(No Name)";
+    const displayName = foundUser.profile?.displayName || "(No Name)";
     const picValue = foundUser.profile?.pic ?? 0;
     const profileImages = [
       "/pfps/1.jpeg",

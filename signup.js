@@ -70,7 +70,7 @@ saveDisplayNameBtn.addEventListener("click", async () => {
         if (usersSnap.exists()) {
             let taken = false;
             usersSnap.forEach(child => {
-                const s = child.val()?.settings;
+                const s = child.val()?.profile;
                 if (s?.displayName?.toLowerCase() === displayName.toLowerCase()) {
                     taken = true;
                 }
@@ -85,7 +85,6 @@ saveDisplayNameBtn.addEventListener("click", async () => {
         const userSettingsRef = ref(db, `users/${user.uid}/settings`);
         const userProfileRef = ref(db, `users/${user.uid}/profile`);
         await set(userSettingsRef, {
-            displayName: displayName,
             color: "#ffffff",
             userEmail: user.email
         });

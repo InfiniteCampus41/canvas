@@ -72,18 +72,22 @@ async function saveDisplayName() {
     if (!/^[a-zA-Z0-9 _-]*$/.test(newDisplay)) {
         return showError("Display Name Can Only Contain Letters, Numbers, Spaces, Underscores, And Dashes.");
     }
+
     const usersSnap = await get(ref(db, 'users'));
     if (usersSnap.exists()) {
         let taken = false;
         usersSnap.forEach(child => {
-            const s = child.val()?.settings;
-            if (s?.displayName === newDisplay) taken = true;
+            const p = child.val()?.profile;
+            if (p?.displayName === newDisplay) taken = true;
         });
         if (taken) return showError("Display Name Already Taken.");
     }
+
     if (newDisplay.length === 0) return showError("Display Name Cannot Be Empty.");
     if (newDisplay.length > 20) return showError("Display Name Cannot Exceed 20 Characters.");
+
     await set(ref(db, `users/${currentUser.uid}/profile/displayName`), newDisplay);
+    await updateProfile(currentUser, { displayName: newDisplay });
     currentDisplay = newDisplay;
     disableDisplayEditing();
     showSuccess("Display Name Saved!");
@@ -120,21 +124,21 @@ async function loadSettings(uid) {
     if (snap.exists()) {
         settings = snap.val();
         Object.entries(settings).forEach(([k, v]) => {
-            if (v !== null && v !== undefined) {
+            if (v !== null && v !== undefined && k !== "displayName") {
                 localStorage.setItem(k, v);
             }
         });
     }
-    const storedColor = settings.color || localStorage.getItem("color") || "#ffffff";
+    let storedColor = settings.color || localStorage.getItem("color") || "#ffffff";
+    const rgb = hexToRgb(storedColor);
+    if (colorDistance(rgb, darkGray) < darkThreshold) {
+        storedColor = lightGray;
+        await set(ref(db, `users/${uid}/settings/color`), storedColor);
+    }
     nameColorInput.value = storedColor;
     localStorage.setItem("color", storedColor);
     if (!settings.color) {
         await set(ref(db, `users/${uid}/settings/color`), storedColor);
-    }
-    const storedDisplayName = settings.displayName || localStorage.getItem("displayName") || "";
-    if (storedDisplayName) {
-        displayNameInput.value = storedDisplayName;
-        localStorage.setItem("displayName", storedDisplayName);
     }
     refreshLocalStorageList();
     statusEl.textContent = `Settings Loaded For ${uid}`;
@@ -149,10 +153,8 @@ async function loadSettings(uid) {
     });
 }
 async function setDisplayNameEverywhere(user, name) {
-    await set(ref(db, `users/${user.uid}/settings/displayName`), name);
     await update(ref(db, `users/${user.uid}/profile`), { displayName: name });
     await updateProfile(user, { displayName: name });
-    localStorage.setItem("displayName", name);
 }
 async function updateDisplayName() {
     if (!currentUser) return;
@@ -164,18 +166,40 @@ async function updateDisplayName() {
     if (usersSnap.exists()) {
         let taken = false;
         usersSnap.forEach(child => {
-            const s = child.val()?.settings;
-            if (s?.displayName === newName) taken = true;
+            const p = child.val()?.profile;
+            if (p?.displayName === newName) taken = true;
         });
         if (taken) return showError("Display Name Already Taken.");
     }
     await setDisplayNameEverywhere(currentUser, newName);
-    refreshLocalStorageList();
     showSuccess("Display Name Updated!");
 }
+function hexToRgb(hex) {
+    hex = hex.replace(/^#/, '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const num = parseInt(hex, 16);
+    return [num >> 16, (num >> 8) & 255, num & 255];
+}
+function colorDistance(c1, c2) {
+    return Math.sqrt(
+        Math.pow(c1[0] - c2[0], 2) +
+        Math.pow(c1[1] - c2[1], 2) +
+        Math.pow(c1[2] - c2[2], 2)
+    );
+}
+const darkThreshold = 100;
+const darkGray = hexToRgb("#121212");
+const lightGray = "#555752";
 saveNameColorBtn.addEventListener("click", async () => {
     if (!currentUser) return;
-    const color = nameColorInput.value || "#ffffff";
+    let color = nameColorInput.value || "#ffffff";
+    const rgb = hexToRgb(color);
+    const dist = colorDistance(rgb, darkGray);
+    if (dist < darkThreshold) {
+        color = lightGray;
+        nameColorInput.value = lightGray;
+        showError("Color Too Dark! Changed To Light Grey.");
+    }
     await set(ref(db, `users/${currentUser.uid}/settings/color`), color);
     localStorage.setItem("color", color);
     refreshLocalStorageList();

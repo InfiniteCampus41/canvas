@@ -1,156 +1,246 @@
 <html>
-    <head>
-        <title>
-            Admin Panel
-        </title>
-        <link rel="icon" type="image/png" href="favicon.ico">
-        <link rel="stylesheet" href="chat.css">
-        <style>
+<head>
+    <title>Admin Panel</title>
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="stylesheet" href="chat.css">
+    <style>
+        /* Base styles */
+        html, body {
+            height: 100%;
+            margin: 0;
+            margin-bottom:20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #121212;
+            color: #fff;
+            overflow: hidden;
+        }
+        body {
+            display: flex;
+            flex-direction: row;
+        }
+        h2, h3 {
+            margin: 0 0 12px 0;
+            font-weight: 600;
+            color: #f0f0f0;
+        }
+        #left, #right {
+            padding: 20px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        #left::-webkit-scrollbar, #right::-webkit-scrollbar {
+            width: 8px;
+        }
+        #left::-webkit-scrollbar-thumb, #right::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+        #left {
+            flex: 2;
+            border-right: 1px solid #333;
+            background: #1a1a1a;
+        }
+        #right {
+            flex: 1;
+            background: #1f1f1f;
+        }
+        .user-item {
+            cursor: pointer;
+            margin: 5px 0;
+            padding: 10px 14px;
+            border-radius: 6px;
+            background: #222;
+            margin-bottom:20px;
+            transition: background 0.2s;
+        }
+        .user-item:hover {
+            background: #333;
+        }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .message:hover {
+            background: #2a2a2a;
+        }
+        .message img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+        .msg-content {
+            flex: 1;
+        }
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #aaa;
+        }
+        .msg-text {
+            margin-top: 4px;
+            color: #fff;
+            word-break: break-word;
+        }
+        .msg-edited {
+            font-size: 0.75em;
+            color: #999;
+            margin-top: 4px;
+        }
+        textarea {
+            width: 100%;
+            background: #1e1e1e;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 0.9em;
+            resize: vertical;
+        }
+        #adminControls {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        #adminControls select, #adminControls textarea {
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #1e1e1e;
+            color: white;
+            padding: 8px;
+            font-size: 0.9em;
+        }
+        #adminControls textarea {
+            flex: 1 1 100%;
+            height: 60px;
+        }
+        button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            background: #2a2a2a;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-size: 0.95em;
+        }
+        button:hover {
+            background: #3a3a3a;
+        }
+        .small-btn {
+            padding: 6px 10px;
+            margin: 0;
+        }
+        #deleteChat {
+            background: #7a1f1f;
+        }
+        #deleteChat:hover {
+            background: #a02020;
+        }
+        #backButton, #backToList {
+            background: #555;
+        }
+        #backButton:hover, #backToList:hover {
+            background: #777;
+        }
+        #chatView, #userEdit {
+            margin-top: 12px;
+            background: #1a1a1a;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
             #left, #right {
-                padding: 20px;
-                overflow-y: auto;
-            }
-            #left {
-                flex: 2;
-                border-right: 1px solid #333;
-            }
-            #right {
-                flex: 1;
-            }
-            .user-item {
-                cursor: pointer;
-                margin: 5px 0;
-                padding: 5px;
-                border-radius: 5px;
-                background: #1e1e1e;
-            }
-            .user-item:hover {
-                background: #333;
+                flex: unset;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #333;
             }
             .message {
-                display: flex;
-                align-items: flex-start;
-                margin-bottom: 12px;
-                background: #1e1e1e;
-                padding: 10px;
-                border-radius: 8px;
+                flex-direction: column;
             }
             .message img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                margin-right: 10px;
-                object-fit: cover;
-            }
-            .msg-content {
-                flex: 1;
-            }
-            .msg-header {
-                display: flex;
-                justify-content: space-between;
-                font-size: 0.85em;
-                color: #aaa;
-            }
-            .msg-text {
-                margin-top: 4px;
-                color: white;
-                word-break: break-word;
-            }
-            .msg-edited {
-                font-size: 0.75em;
-                color: #999;
-                margin-top: 4px;
-            }
-            textarea {
-                width: 100%;
-                height: 300px;
-                background: #1e1e1e;
-                color: white;
-                border: 1px solid #444;
-                border-radius: 6px;
-                padding: 10px;
+                margin-bottom: 6px;
             }
             #adminControls {
-                margin-top: 12px;
-                display: flex;
-                gap: 8px;
-                align-items: flex-start;
+                flex-direction: column;
+                align-items: stretch;
             }
-            #adminControls select, #adminControls textarea {
-                border-radius: 6px;
-                border: 1px solid #444;
-                background: #1e1e1e;
-                color: white;
-                padding: 8px;
+            button {
+                width: 100%;
             }
-            #adminControls textarea {
-                flex: 1;
-                height: 60px;
-                resize: vertical;
+            #adminControls div {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
             }
-            .small-btn {
-                padding: 6px 10px;
-                margin: 0;
+        }
+        @media (max-width: 500px) {
+            h2, h3 {
+                font-size: 1.2em;
             }
-        </style>
-    </head>
-    <body>
-        <div id="left">
-            <h2>
-                Messages Mod View
-            </h2>
-            <div id="privateChats">
+            .user-item {
+                padding: 12px;
+                font-size: 0.95em;
+            }
+            textarea {
+                font-size: 0.9em;
+            }
+        }
+        #userData {
+            height:300px;
+        }
+    </style>
+</head>
+<body>
+    <div id="left">
+        <h2>Messages Mod View</h2>
+        <div id="privateChats"></div>
+        <div id="chatView" style="display:none;">
+            <h3 id="chatTitle"></h3>
+            <div id="chatMessages"></div>
+            <div id="adminControls">
+                <label for="sendAsSelect" style="color:#aaa;">Send as:</label>
+                <select id="sendAsSelect">
+                    <option value="jiEcu7wSifMalQxVupmQXRchA9k1">Hacker41</option>
+                </select>
+                <textarea id="adminMessageInput" placeholder="Type A Message To Send"></textarea>
+                <div style="display:flex;flex-direction:column; gap:8px;">
+                    <button id="sendAdminMessage" class="small-btn">Send</button>
+                    <button id="deleteChat" class="small-btn">Delete Chat</button>
+                </div>
             </div>
-            <div id="chatView" style="display:none;">
-                <h3 id="chatTitle">
-                </h3>
-                <div id="chatMessages">
-                </div>
-                <div id="adminControls">
-                    <label for="sendAsSelect" style="color:#aaa;">
-                        Send as:
-                    </label>
-                    <select id="sendAsSelect">
-                        <option value="jiEcu7wSifMalQxVupmQXRchA9k1">
-                            Hacker41
-                        </option>
-                    </select>
-                    <textarea id="adminMessageInput" placeholder="Type A Message To Send"></textarea>
-                    <div style="display:flex;flex-direction:column;">
-                        <button id="sendAdminMessage" class="small-btn">
-                            Send
-                        </button>
-                        <button id="deleteChat" class="small-btn" style="margin-top:8px;background:#7a1f1f;">
-                            Delete Chat
-                        </button>
-                    </div>
-                </div>
-                <div style="margin-top:8px;">
-                    <button id="backButton">
-                        Back
-                    </button>
-                </div>
+            <div style="margin-top:8px;">
+                <button id="backButton">Back</button>
             </div>
         </div>
-        <div id="right">
-            <h2>
-                Users
-            </h2>
-            <div id="userList">
-            </div>
-            <div id="userEdit" style="display:none;">
-                <h3 id="editTitle">
-                </h3>
-                <textarea id="userData"></textarea>
-                <button id="saveUser">
-                    Save Changes
-                </button>
-                <button id="backToList">
-                    Back
-                </button>
+    </div>
+    <div id="right">
+        <h2>Users</h2>
+        <div id="userList"></div>
+        <div id="userEdit" style="display:none;">
+            <h3 id="editTitle"></h3>
+            <textarea id="userData"></textarea>
+            <div style="display:flex; gap:8px; margin-top:8px; flex-wrap: wrap;">
+                <button id="saveUser">Save Changes</button>
+                <button id="backToList">Back</button>
             </div>
         </div>
-        <script type="module" src="adminchat.js">
-        </script>
-    </body>
+    </div>
+    <script type="module" src="adminchat.js"></script>
+</body>
 </html>
